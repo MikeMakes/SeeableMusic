@@ -19,6 +19,7 @@
 #define REDPIN 10  
 #define GREENPIN 11
 #define BLUEPIN 9
+#define VOLUMEPIN A0
 
 int realcolor[3];   //Actual color
 int newrealcolor[3];    //Next color
@@ -116,9 +117,12 @@ void loop() {
 
 
 void choosenewrealcolor(int pnewrealcolor[]) { //Pick a new color
+    int bright = 0;
     for(int i=0;i<3;i++){
       pnewrealcolor[i]=colors[ random(0,7) ] [ random(0,6) ] [ i ];   //Choose randomly a new value for each RGB component
-      pnewrealcolor[i]*=random(0,256);      //And randomly assign a bright to the choosed color
+      bright = analogRead(VOLUMEPIN);
+      //pnewrealcolor[i]*=random(0,256);      //And randomly assign a bright to the choosed color
+      pnewrealcolor[i]*=bright/4;    //And assign bright according to volume
     }
 }
 
@@ -128,13 +132,13 @@ void colorWrite(int color2write[]) {  //Write "color2write" values to the pins w
     analogWrite(GREENPIN, color2write[2]);
 }
 
-void flash() {    //Display all colors with max bright
+void flash() {    //Display all colors with almost max bright
   for (int i=0; i<6; i++) {
     for(int j=0; j<5;j++) {
       
-          analogWrite(BLUEPIN, colors[i][j][0]*255);
-          analogWrite(REDPIN, colors[i][j][1]*255);
-          analogWrite(GREENPIN, colors[i][j][2]*255);
+          analogWrite(BLUEPIN, colors[i][j][0]*250);
+          analogWrite(REDPIN, colors[i][j][1]*250);
+          analogWrite(GREENPIN, colors[i][j][2]*250);
           delay(250);
     }
   }
