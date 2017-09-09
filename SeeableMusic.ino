@@ -39,7 +39,7 @@ void setup() {
   
   //define colors;
   float f=0;
-  for(int j=0; j<5;j++) {
+  for(int j=0; j<5;j++) {   //Red - pink
             //Matrix [6x5]x3 = [Select color value]x[applied to this RGB component]
             colors[0][j][0]=1;  //Red
             colors[0][j][1]=0;  //Blue
@@ -47,35 +47,35 @@ void setup() {
             f+=0.25;
   }
   f=1;
-  for(int j=0; j<5;j++) {
+  for(int j=0; j<5;j++) {   //Purple - dark blue
             colors[1][j][0]=f;
             colors[1][j][1]=0;
             colors[1][j][2]=1;
             f-=0.25;
   }
   f=0;
-  for(int j=0; j<5;j++) {
+  for(int j=0; j<5;j++) {   //Blue - Light blue
             colors[2][j][0]=0;
             colors[2][j][1]=f;
             colors[2][j][2]=1;
             f+=0.25;
   }
   f=1;
-  for(int j=0; j<5;j++) {
+  for(int j=0; j<5;j++) {   //Cyan - Light green
             colors[3][j][0]=0;
             colors[3][j][1]=1;
             colors[3][j][2]=f;
             f-=0.25;
   }
   f=0;
-  for(int j=0; j<5;j++) {
+  for(int j=0; j<5;j++) {   //Green - Lime green
             colors[4][j][0]=f;
             colors[4][j][1]=1;
             colors[4][j][2]=0;
             f+=0.25;
   }
   f=1;
-  for(int j=0; j<5;j++) {
+  for(int j=0; j<5;j++) {   //Yellow - Orange
             colors[5][j][0]=1;
             colors[5][j][1]=f;
             colors[5][j][2]=0;
