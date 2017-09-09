@@ -42,8 +42,8 @@ void setup() {
   for(int j=0; j<5;j++) {   //Red - pink
             //Matrix [6x5]x3 = [Select color value]x[applied to this RGB component]
             colors[0][j][0]=1;  //Red
-            colors[0][j][1]=0;  //Blue
-            colors[0][j][2]=f;  //Green
+            colors[0][j][1]=0;  //Green
+            colors[0][j][2]=f;  //Blue
             f+=0.25;
   }
   f=1;
@@ -108,9 +108,9 @@ void loop() {
   }
   
   else {    //Is there sound above the level trigger? nope; turn off lights
-    analogWrite(BLUEPIN, 0);
     analogWrite(REDPIN, 0);
     analogWrite(GREENPIN, 0);
+    analogWrite(BLUEPIN, 0);
   }
   
 }
@@ -127,18 +127,18 @@ void choosenewrealcolor(int pnewrealcolor[]) { //Pick a new color
 }
 
 void colorWrite(int color2write[]) {  //Write "color2write" values to the pins where them belongs
-    analogWrite(BLUEPIN, color2write[0]);
-    analogWrite(REDPIN, color2write[1]);
-    analogWrite(GREENPIN, color2write[2]);
+    analogWrite(REDPIN, color2write[0]);
+    analogWrite(GREENPIN, color2write[1]);
+    analogWrite(BLUEPIN, color2write[2]);
 }
 
 void flash() {    //Display all colors with almost max bright
   for (int i=0; i<6; i++) {
     for(int j=0; j<5;j++) {
       
-          analogWrite(BLUEPIN, colors[i][j][0]*250);
-          analogWrite(REDPIN, colors[i][j][1]*250);
-          analogWrite(GREENPIN, colors[i][j][2]*250);
+          analogWrite(REDPIN, colors[i][j][0]*250);
+          analogWrite(GREENPIN, colors[i][j][1]*250);
+          analogWrite(BLUEPIN, colors[i][j][2]*250);
           delay(250);
     }
   }
