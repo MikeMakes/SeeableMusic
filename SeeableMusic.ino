@@ -23,6 +23,7 @@
 
 int realcolor[3];   //Actual color
 int newrealcolor[3];    //Next color
+static int nocolor[3]={0,0,0}; //all lights off
 float colors[6][5][3];  //Store all RGB values wanted [6x5]x[3] = [Value]x[applied to this RGB component]
 
 void flash();
@@ -108,9 +109,12 @@ void loop() {
   }
   
   else {    //Is there sound above the level trigger? nope; turn off lights
-    analogWrite(REDPIN, 0);
+    for(int i=0; i<3;i++) {
+      fade(realcolor[i],newrealcolor[i]);
+    }
+   /* analogWrite(REDPIN, 0);
     analogWrite(GREENPIN, 0);
-    analogWrite(BLUEPIN, 0);
+    analogWrite(BLUEPIN, 0);*/
   }
   
 }
