@@ -15,135 +15,38 @@
     You should have received a copy of the GNU General Public License
     along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
- 
-#define REDPIN 10  
-#define GREENPIN 11
-#define BLUEPIN 9
-#define VOLUMEPIN A0
 
-int realcolor[3];   //Actual color
-int newrealcolor[3];    //Next color
-static int nocolor[3]={0,0,0}; //all lights off
-float colors[6][5][3];  //Store all RGB values wanted [6x5]x[3] = [Value]x[applied to this RGB component]
+#include "rgbhandler.h"
 
-void flash();
-
-void choosenewrealcolor(int pnewrealcolor[]);
-void colorWrite(int color2write[]);
+rgb nextcolor, actualcolor;
 
 void setup() {
-
   pinMode(4,INPUT); //SIG of the Parallax Sound Impact Sensor connected to Digital Pin 7
   pinMode(REDPIN, OUTPUT);
   pinMode(GREENPIN, OUTPUT);
   pinMode(BLUEPIN, OUTPUT);
-  
-  //define colors;
-  float f=0;
-  for(int j=0; j<5;j++) {   //Red - pink
-            //Matrix [6x5]x3 = [Select color value]x[applied to this RGB component]
-            colors[0][j][0]=1;  //Red
-            colors[0][j][1]=0;  //Green
-            colors[0][j][2]=f;  //Blue
-            f+=0.25;
-  }
-  f=1;
-  for(int j=0; j<5;j++) {   //Purple - dark blue
-            colors[1][j][0]=f;
-            colors[1][j][1]=0;
-            colors[1][j][2]=1;
-            f-=0.25;
-  }
-  f=0;
-  for(int j=0; j<5;j++) {   //Blue - Light blue
-            colors[2][j][0]=0;
-            colors[2][j][1]=f;
-            colors[2][j][2]=1;
-            f+=0.25;
-  }
-  f=1;
-  for(int j=0; j<5;j++) {   //Cyan - Light green
-            colors[3][j][0]=0;
-            colors[3][j][1]=1;
-            colors[3][j][2]=f;
-            f-=0.25;
-  }
-  f=0;
-  for(int j=0; j<5;j++) {   //Green - Lime green
-            colors[4][j][0]=f;
-            colors[4][j][1]=1;
-            colors[4][j][2]=0;
-            f+=0.25;
-  }
-  f=1;
-  for(int j=0; j<5;j++) {   //Yellow - Orange
-            colors[5][j][0]=1;
-            colors[5][j][1]=f;
-            colors[5][j][2]=0;
-            f-=0.25;
-  }
-  
-  choosenewrealcolor(realcolor);
 
-  flash();
+  actualcolor=newrgb();
 
-  Serial.begin(9600);
+  writecolor(red);
+  delay(100);
+  writecolor(green);
+  delay(100);
+  writecolor(blue);
+  delay(100);
 }
- 
-#define fade(x,y) if (x>y) x--; else if (x<y) x++;  //Fade x to y, increasing/decreasing x as needed
 
 void loop() {
-  
   boolean soundstate = digitalRead(4);  //Mic's pin
-  
   if (soundstate == 1) {  //Is there sound above the level trigger? yes;
-    choosenewrealcolor(newrealcolor);   //Choose the next color and fade to it from the old color, in case they are not the same
-    while (realcolor[0] != newrealcolor[0] ||
-           realcolor[1] != newrealcolor[1] ||
-           realcolor[2] != newrealcolor[2] ){
-              for(int i=0; i<3;i++) {
-                  fade(realcolor[i],newrealcolor[i]);
-              }
-              colorWrite(realcolor);  //Write the new (now actual) color
-           } 
-  }
-  
-  else {    //Is there sound above the level trigger? nope; turn off lights
-    for(int i=0; i<3;i++) {
-      fade(realcolor[i],newrealcolor[i]);
-    }
-   /* analogWrite(REDPIN, 0);
-    analogWrite(GREENPIN, 0);
-    analogWrite(BLUEPIN, 0);*/
-  }
-  
-}
-
-
-void choosenewrealcolor(int pnewrealcolor[]) { //Pick a new color
-    int bright = 0;
-    for(int i=0;i<3;i++){
-      pnewrealcolor[i]=colors[ random(0,7) ] [ random(0,6) ] [ i ];   //Choose randomly a new value for each RGB component
-      bright = analogRead(VOLUMEPIN);
-      //pnewrealcolor[i]*=random(0,256);      //And randomly assign a bright to the choosed color
-      pnewrealcolor[i]*=bright/4;    //And assign bright according to volume
-    }
-}
-
-void colorWrite(int color2write[]) {  //Write "color2write" values to the pins where them belongs
-    analogWrite(REDPIN, color2write[0]);
-    analogWrite(GREENPIN, color2write[1]);
-    analogWrite(BLUEPIN, color2write[2]);
-}
-
-void flash() {    //Display all colors with almost max bright
-  for (int i=0; i<6; i++) {
-    for(int j=0; j<5;j++) {
-      
-          analogWrite(REDPIN, colors[i][j][0]*250);
-          analogWrite(GREENPIN, colors[i][j][1]*250);
-          analogWrite(BLUEPIN, colors[i][j][2]*250);
-          delay(250);
-    }
+    nextcolor = newrgb(actualcolor);   //Choose the next color
+    do {
+      writecolor(actualcolor);
+      fadergb(actualcolor, nextcolor);  //fade the actual color to the next color
+    } while  (actualcolor.r!=nextcolor.r || //while actual != next color
+              actualcolor.g!=nextcolor.g ||
+              actualcolor.b!=nextcolor.b );
+  } else {
+    writecolor(black);
   }
 }
