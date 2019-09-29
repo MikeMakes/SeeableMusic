@@ -16,9 +16,9 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#define REDPIN 10  
-#define GREENPIN 11
-#define BLUEPIN 9
+#define REDPIN 11  
+#define GREENPIN 9
+#define BLUEPIN 10
 #define VOLUMEPIN A0
 
 #define fade(x,y) if (x>y) x--; else if (x<y) x++;  //Fade x to y, increasing/decreasing x as needed
@@ -40,22 +40,48 @@ rgb newrgb(rgb oldrgb=black) {  //choose a new random rgb different than oldrgb 
   while  (rndrgb.r==oldrgb.r ||
           rndrgb.g==oldrgb.g ||
           rndrgb.b==oldrgb.b ) {
-    rndrgb.r=random(0,256);
-    rndrgb.g=random(0,256);
-    rndrgb.b=random(0,256);
+    if (rndrgb.r==oldrgb.r) rndrgb.r=random(0,256);
+    if (rndrgb.r==oldrgb.r) rndrgb.g=random(0,256);
+    if (rndrgb.r==oldrgb.r) rndrgb.b=random(0,256);
   }
   return rndrgb;
 }
 
-void fadergb(rgb fromcolor, rgb tocolor) {  //fade fromcolor to tocolor
-    fade(fromcolor.r, tocolor.r);
-    fade(fromcolor.g, tocolor.g);
-    fade(fromcolor.b, tocolor.b);
+rgb fadergb (rgb fromcolor, rgb tocolor, int fadefactor=1) {  //fade "fromcolor" "tocolor" with "fadefactor" increments
+  rgb fadedrgb=fromcolor;
+    if (fadedrgb.r!=tocolor.r)  { //fade r if not equals yet
+      if (fadedrgb.r > tocolor.r)  fadedrgb.r-=fadefactor;
+      else if (fadedrgb.r < tocolor.r) fadedrgb.r+=fadefactor;
+    }
+    
+    if (fadedrgb.g!=tocolor.g)  { //fade g
+      if (fadedrgb.g > tocolor.g)  fadedrgb.g-=fadefactor;
+      else if (fadedrgb.g < tocolor.g) fadedrgb.g+=fadefactor;
+    }
+    
+    if (fadedrgb.b!=tocolor.b)  { //fade b
+      if (fadedrgb.b > tocolor.b)  fadedrgb.b-=fadefactor;
+      else if (fadedrgb.b < tocolor.b) fadedrgb.b+=fadefactor;
+    }
+    
+    return fadedrgb;
 }
 
 void writecolor(rgb color)  { //write rgb
   analogWrite(REDPIN, color.r);
   analogWrite(GREENPIN, color.g);
   analogWrite(BLUEPIN, color.b);
+}
+
+void fadenwrite(rgb inirgb, rgb finalrgb, int delayfade=0, int fadefactor=1){ //fade from "inirgb" to "finalrgb" and write the new color in each iteration
+  rgb fadingrgb=inirgb;
+  writecolor(fadingrgb);
+  while  (fadingrgb.r!=finalrgb.r ||
+              fadingrgb.g!=finalrgb.g ||
+              fadingrgb.b!=finalrgb.b ){
+    fadingrgb=fadergb(fadingrgb, finalrgb, fadefactor);
+    writecolor(fadingrgb);
+    if (delayfade!=0) delay(delayfade); //delay between iterations
+  }
 }
 

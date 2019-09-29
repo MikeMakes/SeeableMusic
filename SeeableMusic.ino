@@ -19,30 +19,40 @@
 #include "rgbhandler.h"
 
 rgb nextcolor, actualcolor;
+rgb fadetest;
 
 void setup() {
   pinMode(4,INPUT); //SIG of the Parallax Sound Impact Sensor connected to Digital Pin 7
   pinMode(REDPIN, OUTPUT);
   pinMode(GREENPIN, OUTPUT);
   pinMode(BLUEPIN, OUTPUT);
-
+  Serial.begin(57600);
   actualcolor=newrgb();
-
+  Serial.println("start");
   writecolor(red);
-  delay(100);
+  delay(1000);
   writecolor(green);
-  delay(100);
+  delay(1000);
   writecolor(blue);
-  delay(100);
+  delay(1000);
+  Serial.println("start fade");
+  fadenwrite(blue,green,1);
+  delay(1000);
+  fadenwrite(green,red,1);
+  delay(1000);
+  Serial.println("exit setup");
 }
 
 void loop() {
+  Serial.println("loop");
   boolean soundstate = digitalRead(4);  //Mic's pin
   if (soundstate == 1) {  //Is there sound above the level trigger? yes;
+    Serial.println("trigger");
     nextcolor = newrgb(actualcolor);   //Choose the next color
+    //fadenwrite(nextcolor,actualcolor,1);
     do {
       writecolor(actualcolor);
-      fadergb(actualcolor, nextcolor);  //fade the actual color to the next color
+      fadergb(actualcolor, nextcolor,1);  //fade the actual color to the next color
     } while  (actualcolor.r!=nextcolor.r || //while actual != next color
               actualcolor.g!=nextcolor.g ||
               actualcolor.b!=nextcolor.b );
